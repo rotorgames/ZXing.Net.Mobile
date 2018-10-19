@@ -7,6 +7,7 @@ using Xamarin.Forms.Platform.Android;
 using System.ComponentModel;
 using Android.Widget;
 using ZXing.Mobile;
+using Android.Graphics;
 
 [assembly:ExportRenderer(typeof(ZXingBarcodeImageView), typeof(ZXingBarcodeImageViewRenderer))]
 namespace ZXing.Net.Mobile.Forms.Android
@@ -45,6 +46,17 @@ namespace ZXing.Net.Mobile.Forms.Android
             base.OnElementChanged (e);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                formsView = null;
+                imageView = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
         void regenerate ()
         {
             if (formsView != null && formsView.BarcodeValue != null)
@@ -58,10 +70,15 @@ namespace ZXing.Net.Mobile.Forms.Android
 
                 var value = formsView != null ? formsView.BarcodeValue : string.Empty;
 
-                Device.BeginInvokeOnMainThread (() => {
-                    var image = writer.Write (value);
+                Device.BeginInvokeOnMainThread (() => 
+                {
+                    Bitmap image = null;
 
-                    imageView.SetImageBitmap (image);
+                    if(!string.IsNullOrEmpty(value))
+                        image = writer.Write(value);
+
+                    if(imageView != null)
+                        imageView.SetImageBitmap (image);
                 });
             }
         }
