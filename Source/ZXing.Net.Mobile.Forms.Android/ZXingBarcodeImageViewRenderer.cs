@@ -14,7 +14,9 @@ namespace ZXing.Net.Mobile.Forms.Android
 {
     [Preserve(AllMembers = true)]
     public class ZXingBarcodeImageViewRenderer : ViewRenderer<ZXingBarcodeImageView, ImageView>
-    {       
+    {
+        bool _disposed;
+
         public static void Init ()
         {
             var temp = DateTime.Now;
@@ -50,8 +52,7 @@ namespace ZXing.Net.Mobile.Forms.Android
         {
             if(disposing)
             {
-                formsView = null;
-                imageView = null;
+                _disposed = true;
             }
 
             base.Dispose(disposing);
@@ -77,8 +78,8 @@ namespace ZXing.Net.Mobile.Forms.Android
                     if(!string.IsNullOrEmpty(value))
                         image = writer.Write(value);
 
-                    if(imageView != null)
-                        imageView.SetImageBitmap (image);
+                    if (!_disposed)
+                        imageView.SetImageBitmap(image);
                 });
             }
         }
